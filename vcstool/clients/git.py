@@ -334,6 +334,8 @@ class GitClient(VcsClientBase):
                 cmd_fetch += ['--depth', '1']
             else:
                 version_type = None
+            if command.treeless:
+                cmd_fetch += ['--filter=tree:0']
             result_fetch = self._run_command(cmd_fetch, retry=command.retry)
             if result_fetch['returncode']:
                 return result_fetch
@@ -393,6 +395,8 @@ class GitClient(VcsClientBase):
                     checkout_version = command.version
                 if command.shallow:
                     cmd_clone += ['--depth', '1']
+                if command.treeless:
+                    cmd_clone += ['--filter=tree:0']
                 result_clone = self._run_command(
                     cmd_clone, retry=command.retry)
                 if result_clone['returncode']:

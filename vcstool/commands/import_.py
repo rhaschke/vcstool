@@ -24,7 +24,7 @@ class ImportCommand(Command):
     help = 'Import the list of repositories'
 
     def __init__(
-        self, args, url, version=None, recursive=False, shallow=False
+        self, args, url, version=None, recursive=False, shallow=False, treeless=False
     ):
         super(ImportCommand, self).__init__(args)
         self.url = url
@@ -34,6 +34,7 @@ class ImportCommand(Command):
         self.skip_existing = args.skip_existing
         self.recursive = recursive
         self.shallow = shallow
+        self.treeless = treeless
 
 
 def get_parser():
@@ -50,6 +51,9 @@ def get_parser():
     group.add_argument(
         '--shallow', action='store_true', default=False,
         help='Create a shallow clone without a history')
+    group.add_argument(
+        '--treeless', action='store_true', default=False,
+        help='Create a treeless clone with history, but w/o trees and blobs')
     group.add_argument(
         '--recursive', action='store_true', default=False,
         help='Recurse into submodules')
@@ -171,7 +175,7 @@ def generate_jobs(repos, args):
         command = ImportCommand(
             args, repo['url'],
             str(repo['version']) if 'version' in repo else None,
-            recursive=args.recursive, shallow=args.shallow)
+            recursive=args.recursive, shallow=args.shallow, treeless=args.treeless)
         job = {'client': client, 'command': command}
         jobs.append(job)
     return jobs
