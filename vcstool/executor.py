@@ -237,20 +237,23 @@ def output_result(result, hide_empty=False):
     elif not result['cmd']:
         if output:
             output = ansi('yellowf') + output + ansi('reset')
-    if output or not hide_empty:
-        client = result['client']
-        print(
-            ansi('bluef') + '=== ' +
-            ansi('boldon') + fix_output_path(client.path) + ansi('boldoff') +
-            ' (' + client.__class__.type + ') ===' + ansi('reset'),
-            file=stdout)
-    if output:
-        try:
-            print(output, file=stdout)
-        except UnicodeEncodeError:
+    try:
+        if output or not hide_empty:
+            client = result['client']
             print(
-                output.encode(sys.getdefaultencoding(), 'replace'),
+                ansi('bluef') + '=== ' +
+                ansi('boldon') + fix_output_path(client.path) + ansi('boldoff') +
+                ' (' + client.__class__.type + ') ===' + ansi('reset'),
                 file=stdout)
+        if output:
+            try:
+                print(output, file=stdout)
+            except UnicodeEncodeError:
+                print(
+                    output.encode(sys.getdefaultencoding(), 'replace'),
+                    file=stdout)
+    except BlockingIOError:
+        pass
 
 
 def output_results(results, output_handler=output_result, hide_empty=False):
